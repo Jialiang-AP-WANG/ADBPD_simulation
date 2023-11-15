@@ -1,0 +1,124 @@
+# -*- coding: utf-8 -*-
+"""
+
+Created on April 05
+
+Simulation of imaging with spectra-adapted sensor array
+
+@author: Wang Jialiang
+"""
+
+
+
+"""
+Import packages
+"""
+import os
+import sys
+import time
+from tqdm import tqdm
+import numpy as np
+import pandas as pd
+from PIL import Image as P_image
+from __Mod_route__ import get_root
+import Device_models as device
+
+rr=get_root()
+Task_name='\\20230927'
+Task_subname='_mixed_dataset_recog'
+
+
+"""
+Import dataset (file and corresponding information here)
+"""
+#%%
+print('\n Importing dataset from local file')
+Dataset_discription='Train_set'
+Dataset=(np.load(rr+'\Mixed_dataset'+Task_name+'\Train_B2.npy'),
+          np.load(rr+'\Mixed_dataset'+Task_name+'\Train_B3.npy'),
+          np.load(rr+'\Mixed_dataset'+Task_name+'\Train_B4.npy'),
+          np.load(rr+'\Mixed_dataset'+Task_name+'\Train_B5.npy'))
+Channel_discription=np.array(['IR','vis'])
+# separate labels and input array
+Labels=Dataset[0][:,0]
+Labels.astype(np.int64)
+Input=np.empty((Dataset[0].shape[0],Dataset[0].shape[1]-1,4))
+Input[:,:,0]=Dataset[0][:,1:]
+Input[:,:,1]=Dataset[1][:,1:]
+Input[:,:,2]=Dataset[2][:,1:]
+Input[:,:,3]=Dataset[3][:,1:]
+# save log of the organized input
+outdir_inpt_neuron=rr+'\\Log'+Task_name+Task_subname
+if not os.path.exists(outdir_inpt_neuron):
+    os.mkdir(outdir_inpt_neuron)
+np.save(outdir_inpt_neuron+'\\'+Dataset_discription+'_channel_discription.npy',Channel_discription)
+for ch in range(Input.shape[2]):
+    np.save(outdir_inpt_neuron+'\\'+Dataset_discription+'_image_input_ch'+str(ch)+'.npy',Input[:,:,ch])
+    
+    #%%
+
+
+"""
+Imaging
+"""
+#%%
+# Construct input neurons: DBPD
+print('\n Constructing input neurons with DBPD array')
+# construct DBPD array
+DBPD_array=np.empty((28,28))
+DBPD_Vision_series=pd.Series([2.0,-1.5])
+# initialize DBPD image results
+DBPD_input_neurons=np.empty((Input.shape[0],Input.shape[1],DBPD_Vision_series.size))
+DBPD_img=[np.empty((DBPD_array.shape[0],DBPD_array.shape[1],Input.shape[0])),
+              np.empty((DBPD_array.shape[0],DBPD_array.shape[1],Input.shape[0]))]
+# DBPD Imaging
+for i in range(DBPD_Vision_series.size):
+    print('\n Generating #'+str(i)+' vision')
+    DBPD_array[:,:]=DBPD_Vision_series[i]
+    DBPD_input_neurons_temp=[]
+    
+    for j in tqdm(range(Input.shape[0])):
+        imaged_pattern=Input[j,:,:].reshape((DBPD_array.shape[0],DBPD_array.shape[1],4))
+        DBPD_array_img=device.DBPD_image(DBPD_array,imaged_pattern,fluct=1)
+        DBPD_array_neuron=DBPD_array_img.flatten()
+        DBPD_img[i][:,:,j]=DBPD_array_img
+        DBPD_input_neurons_temp.append(DBPD_array_neuron.tolist())
+    
+    DBPD_input_neurons[:,:,i]=DBPD_input_neurons_temp
+
+# Construct input neurons: BBPD
+print('\n Constructing input neurons with BBPD array')
+# construct BBPD array
+BBPD_array=np.empty((28,28))
+BBPD_Vision_series=pd.Series([-3.0])
+# initialize BBPD image results
+BBPD_input_neurons=np.empty((Input.shape[0],Input.shape[1],BBPD_Vision_series.size))
+BBPD_img=[np.empty((BBPD_array.shape[0],BBPD_array.shape[1],Input.shape[0]))]
+# BBPD Imaging
+for i in range(BBPD_Vision_series.size):
+    print('\n Generating #'+str(i)+' vision')
+    BBPD_array[:,:]=BBPD_Vision_series[i]
+    BBPD_input_neurons_temp=[]
+    
+    for j in tqdm(range(Input.shape[0])):
+        imaged_pattern=Input[j,:,:].reshape((BBPD_array.shape[0],BBPD_array.shape[1],4))
+        BBPD_array_img=device.BBPD_image(BBPD_array,imaged_pattern,fluct=1)
+        BBPD_array_neuron=BBPD_array_img.flatten()
+        BBPD_img[i][:,:,j]=BBPD_array_img
+        BBPD_input_neurons_temp.append(BBPD_array_neuron.tolist())
+    
+    BBPD_input_neurons[:,:,i]=BBPD_input_neurons_temp
+
+# save generated input neurons to local file
+outdir_models=rr+'\Models\\'+Task_name+Task_subname
+if not os.path.exists(outdir_models):
+    os.mkdir(outdir_models)
+np.save(outdir_models+'\\'+Dataset_discription+'_DBPD_Input_neurons.npy',DBPD_input_neurons)
+np.save(outdir_models+'\\'+Dataset_discription+'_DBPD_img_IR.npy',DBPD_img[0])
+np.save(outdir_models+'\\'+Dataset_discription+'_DBPD_img_vis.npy',DBPD_img[1])
+np.save(outdir_models+'\\'+Dataset_discription+'_BBPD_Input_neurons.npy',BBPD_input_neurons)
+np.save(outdir_models+'\\'+Dataset_discription+'_BBPD_img_hybrid.npy',BBPD_img[0])
+# labels as well
+np.save(outdir_models+'\\'+Dataset_discription+'_Labels.npy',Labels)
+    #%%
+
