@@ -3,6 +3,10 @@
 Created on Tue May 30 19:03:44 2023
 
 @author: Wang Jialiang
+
+This dataset is adapted from The QuickDraw! dataset (https://github.com/googlecreativelab/quickdraw-dataset/) with the Creative Commons Attribution-Share Alike 4.0 license (https://creativecommons.org/licenses/by/4.0/). 
+This dataset is licensed under Creative Commons Attribution-Share Alike 4.0 license (https://creativecommons.org/licenses/by/4.0/). 
+
 """
 
 import os
