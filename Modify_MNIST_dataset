@@ -3,6 +3,10 @@
 Created on Tue May 30 19:03:44 2023
 
 @author: Wang Jialiang
+
+Jialiang Wang (The Hong Kong Polytechnic Univeristy) and Yang Chai (The Hong Kong Polytechnic Univeristy) hold the copyright of this dataset. 
+This dataset is licensed under Creative Commons Attribution-Share Alike 3.0 license (https://creativecommons.org/licenses/by-sa/3.0/) upon 
+the request of the source material MNIST database (http://yann.lecun.com/exdb/mnist/). 
 """
 
 import os
