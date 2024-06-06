@@ -4,7 +4,7 @@ Created on Tue May 30 19:03:44 2023
 
 @author: Wang Jialiang
 
-Jialiang Wang (The Hong Kong Polytechnic Univeristy) and Yang Chai (The Hong Kong Polytechnic Univeristy) hold the copyright of this dataset. 
+This dataset is adapted from the MNIST database (http://yann.lecun.com/exdb/mnist/) with Creative Commons Attribution-Share Alike 3.0 license (https://creativecommons.org/licenses/by-sa/3.0/). 
 This dataset is licensed under Creative Commons Attribution-Share Alike 3.0 license (https://creativecommons.org/licenses/by-sa/3.0/) upon 
 the request of the source material MNIST database (http://yann.lecun.com/exdb/mnist/). 
 """
@@ -24,18 +24,18 @@ from __Mod_route__ import get_root
 
 
 rr=get_root()
-MNIST_Lib_route='E:\Code\__Public_MNIST_Lib__' # MNIST dataset at local
-Task_name='\\20230927_mix'
+MNIST_Lib_route='# route' # MNIST dataset at local
+Task_name='task_name'
 
 
 """
-Load and label QD dataset
+Load and label MNIST dataset
 """
 #%%
 # load MNIST dataset
 print('\n Reading original data (Train set)')
-MNIST_train_OG=np.load('E:\\Code\\DBPD_simulation\\MNIST_dataset\\MNIST_train.npy')
-MNIST_test_OG=np.load('E:\\Code\\DBPD_simulation\\MNIST_dataset\\MNIST_test.npy')
+MNIST_train_OG=np.load(MNIST_Lib_route+'\\MNIST_train.npy')
+MNIST_test_OG=np.load(MNIST_Lib_route+'\\MNIST_test.npy')
 
 MNIST_train_df = pd.DataFrame(MNIST_train_OG[:,1:], index=MNIST_train_OG[:,0])
 MNIST_test_df = pd.DataFrame(MNIST_test_OG[:,1:], index=MNIST_test_OG[:,0])
@@ -61,12 +61,12 @@ for i in range(10):
 Trim training set images
 """
 #%%
-# QD_dataset_train = np.load(rr+'\\QD_selected'+Task_name+'\\QD_selected_train.npy')
+# MNIST_dataset_train = np.load(rr+'\\MNIST_selected'+Task_name+'\\MNIST_selected_train.npy')
 # # shuffle samples (10 times)
 # print('\n Loading dataset')
 # for i in range(10):
-#     perm_iter = np.random.permutation(QD_dataset_train.shape[0])
-#     QD_dataset_train = QD_dataset_train[perm_iter]
+#     perm_iter = np.random.permutation(MNIST_dataset_train.shape[0])
+#     MNIST_dataset_train = MNIST_dataset_train[perm_iter]
     
 # generate illumination 
 print('\n Generating training set')
@@ -165,7 +165,7 @@ np.save(outdir_trim+'\\Train_IR_jammed_B5_img.npy',MNIST_train_B5_img)
 Trim testing set images
 """
 #%%
-# MNIST_test = np.load(rr+'\\QD_selected'+Task_name+'\\QD_selected_test.npy')
+# MNIST_test = np.load(rr+'\\MNIST_selected'+Task_name+'\\MNIST_selected_test.npy')
 # # shuffle samples (10 times)
 # for i in range(10):
 #     perm_iter = np.random.permutation(MNIST_test.shape[0])
@@ -224,7 +224,7 @@ print('\n Testing set generated')
 # # MNIST_test_interference_B4=MNIST_test_night_B4.copy()
 # # MNIST_test_interference_B5=MNIST_test_night_B5.copy()
 
-# QD_interference=MNIST_test_interference_B3[:,1:].reshape((-1,28,28))
+# MNIST_interference=MNIST_test_interference_B3[:,1:].reshape((-1,28,28))
 
 # for i in tqdm(range(QD_interference.shape[0])):
 #     seed_size_x=np.random.randint(12,18)
@@ -233,7 +233,7 @@ print('\n Testing set generated')
 #     seed_y=np.random.randint(0,28-seed_size_y)
 #     QD_interference[i,seed_x:seed_x+seed_size_x,seed_y:seed_y+seed_size_y]+=200
     
-# QD_interference=QD_interference.clip(2,255)  
+# MNIST_interference=MNIST_interference.clip(2,255)  
 # MNIST_test_interference_B3[:,1:]=QD_interference.reshape((-1,784))
 # # MNIST_test_interference_B4[:,1:]=QD_interference.reshape((-1,784))
 # # MNIST_test_interference_B5[:,1:]=QD_interference.reshape((-1,784))
